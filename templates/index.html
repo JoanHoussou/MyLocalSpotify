@@ -60,6 +60,9 @@
                     <i class="icon-volume">🔊</i>
                     <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
                 </div>
+                <div class="sign" style="margin-top: 2px;">
+                    <p>By Joan N'guessan</p>
+                </div>
             </div>
         </div>
     </div>
@@ -67,7 +70,6 @@
 <audio id="audio-player"></audio>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-<!-- Script pour gérer l'affichage des paroles -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const showLyricsBtn = document.getElementById('show-lyrics-btn');
