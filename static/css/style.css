@@ -10,6 +10,32 @@
     --spotify-border: #333333;
 }
 
+.lyrics-section {
+    display: none; /* Hidden by default */
+    background-color: var(--spotify-dark-gray); /* Use Spotify's dark gray */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px; /* Add rounded corners */
+    overflow-y: auto; /* Allow scrolling if lyrics are long */
+    max-height: 300px; /* Set a maximum height to prevent overflowing */
+}
+
+.lyrics-section.show {
+    display: block; /* Shown when .show class is added */
+}
+
+.lyrics-section h2 {
+    color: var(--spotify-text-secondary); /* Use a lighter text color */
+    margin-bottom: 10px;
+}
+
+.lyrics-section p {
+    color: var(--spotify-text); /* Use the main text color */
+    line-height: 1.5; /* Adjust line spacing for readability */
+    white-space: pre-wrap; /* Preserve line breaks from the lyrics */
+}
+
+
 /* Styles généraux */
 * {
     margin: 0;

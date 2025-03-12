@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
+
+    
+
     // Fonctions
     async function loadMusicLibrary() {
         try {
@@ -282,6 +286,28 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 currentCover.src = "{{ url_for('static', filename='img/default-cover.jpg') }}";
             }
+
+             // Fetch lyrics AFTER metadata is loaded
+            const lyricsResponse = await fetch(`/lyrics/${encodeURIComponent(file.path)}`);
+            if (!lyricsResponse.ok) {
+                if (lyricsResponse.status === 404) {
+                    showNotification("Paroles non trouvées pour ce morceau.", 'info');
+                    document.getElementById('lyrics-content').innerHTML = '<p>Aucune parole trouvée.</p>';
+            } else {
+                throw new Error(`Erreur HTTP lors de la récupération des paroles : ${lyricsResponse.status} - ${await lyricsResponse.text()}`);
+            }
+            } else {
+            const lyricsData = await lyricsResponse.json();
+            if (lyricsData.lyrics) {
+                document.getElementById('lyrics-content').innerHTML = lyricsData.lyrics;
+            } else if (lyricsData.error) {
+                showNotification(`Erreur lors de la récupération des paroles: ${lyricsData.error}`, 'error');
+                document.getElementById('lyrics-content').innerHTML = '<p>Aucune parole trouvée.</p>';
+            } else {
+                document.getElementById('lyrics-content').innerHTML = '<p>Aucune parole trouvée.</p>';
+            }
+            }
+
             
             // Mettre à jour le titre de la page
             document.title = `${metadata.title || file.name} - SpotifyLocal`;
@@ -291,11 +317,43 @@ document.addEventListener('DOMContentLoaded', function() {
             isPlaying = true;
             updatePlayButton();
             
-            // Ajouter une animation de "Now Playing"
-            document.querySelector('.now-playing').classList.add('playing');
-            setTimeout(() => {
-                document.querySelector('.now-playing').classList.remove('playing');
-            }, 1000);
+// Ajouter une animation de "Now Playing"
+document.querySelector('.now-playing').classList.add('playing');
+setTimeout(() => {
+    document.querySelector('.now-playing').classList.remove('playing');
+}, 1000);
+
+// Ajouter un gestionnaire pour le bouton "Afficher les paroles"
+document.getElementById('show-lyrics-btn').addEventListener('click', () => {
+    const lyricsContainer = document.getElementById('lyrics-container');
+    lyricsContainer.classList.toggle('hidden');
+});
+
+// Fonction pour charger les paroles
+async function loadLyrics(filePath) {
+    try {
+        const response = await fetch(`/lyrics/${encodeURIComponent(filePath)}`);
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+
+        const data = await response.json();
+        if (data.lyrics) {
+            document.getElementById('lyrics-content').innerHTML = `<pre>${data.lyrics}</pre>`;
+        } else {
+            document.getElementById('lyrics-content').innerHTML = '<p>Aucune parole disponible</p>';
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des paroles:', error);
+        document.getElementById('lyrics-content').innerHTML = '<p>Erreur lors du chargement des paroles</p>';
+    }
+}
+
+// Charger les paroles lorsque le morceau change
+audioPlayer.addEventListener('play', () => {
+    if (currentPlaylist.length > 0 && currentIndex >= 0) {
+        const file = currentPlaylist[currentIndex];
+        loadLyrics(file.path);
+    }
+});
             
         } catch (error) {
             showNotification('Erreur lors de la lecture', 'error');
@@ -307,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentAlbum.textContent = 'Inconnu';
             currentCover.src = "{{ url_for('static', filename='img/default-cover.jpg') }}";
         }
+        
     }
 
     function preloadNextTrack() {

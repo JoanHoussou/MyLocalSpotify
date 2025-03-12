@@ -1,67 +1,88 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpotifyLocal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpotifyLocal</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>SpotifyLocal</h1>
-            <div class="folder-selector">
-                <form action="/set_music_folder" method="post">
-                    <input type="text" name="folder" placeholder="Chemin du dossier de musique" required>
-                    <button type="submit">Changer</button>
-                </form>
+<div class="container">
+    <header>
+        <h1>SpotifyLocal</h1>
+        <div class="folder-selector">
+            <form action="/set_music_folder" method="post">
+                <input type="text" name="folder" placeholder="Chemin du dossier de musique" required>
+                <button type="submit">Changer</button>
+            </form>
+        </div>
+    </header>
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="section">
+                <h2>Bibliothèque</h2>
+                <div id="music-library"></div>
             </div>
-        </header>
-
-        <div class="main-content">
-            <div class="sidebar">
-                <div class="section">
-                    <h2>Bibliothèque</h2>
-                    <div id="music-library"></div>
+        </div>
+        <div class="content">
+            <div class="now-playing">
+                <div class="album-cover">
+                    <img id="current-cover" src="{{ url_for('static', filename='img/default-cover.jpg') }}" alt="Pochette d'album">
+                </div>
+                <div class="track-info">
+                    <h3 id="current-title">Aucun titre en lecture</h3>
+                    <p id="current-artist">-</p>
+                    <p id="current-album">-</p>
+                    <button id="show-lyrics-btn" class="btn">Afficher les paroles</button>
                 </div>
             </div>
-
-            <div class="content">
-                <div class="now-playing">
-                    <div class="album-cover">
-                        <img id="current-cover" src="{{ url_for('static', filename='img/default-cover.jpg') }}" alt="Pochette d'album">
+            
+            <!-- Section des paroles avec les styles existants -->
+            <div class="lyrics-section" id="lyrics-container">
+                <h2>Paroles</h2>
+                <p id="lyrics-content">Aucune parole disponible</p>
+            </div>
+            
+            <div class="player-controls">
+                <div class="progress-container">
+                    <span id="current-time">0:00</span>
+                    <div class="progress-bar">
+                        <div id="progress"></div>
                     </div>
-                    <div class="track-info">
-                        <h3 id="current-title">Aucun titre en lecture</h3>
-                        <p id="current-artist">-</p>
-                        <p id="current-album">-</p>
-                    </div>
+                    <span id="total-time">0:00</span>
                 </div>
-
-                <div class="player-controls">
-                    <div class="progress-container">
-                        <span id="current-time">0:00</span>
-                        <div class="progress-bar">
-                            <div id="progress"></div>
-                        </div>
-                        <span id="total-time">0:00</span>
-                    </div>
-                    <div class="controls">
-                        <button id="prev-btn"><i class="icon-prev">⏮</i></button>
-                        <button id="play-btn"><i class="icon-play">▶</i></button>
-                        <button id="next-btn"><i class="icon-next">⏭</i></button>
-                    </div>
-                    <div class="volume-container">
-                        <i class="icon-volume">🔊</i>
-                        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
-                    </div>
+                <div class="controls">
+                    <button id="prev-btn"><i class="icon-prev">⏮</i></button>
+                    <button id="play-btn"><i class="icon-play">▶</i></button>
+                    <button id="next-btn"><i class="icon-next">⏭</i></button>
+                </div>
+                <div class="volume-container">
+                    <i class="icon-volume">🔊</i>
+                    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
                 </div>
             </div>
         </div>
     </div>
+</div>
+<audio id="audio-player"></audio>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-    <audio id="audio-player"></audio>
-
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<!-- Script pour gérer l'affichage des paroles -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const showLyricsBtn = document.getElementById('show-lyrics-btn');
+    const lyricsContainer = document.getElementById('lyrics-container');
+    
+    showLyricsBtn.addEventListener('click', function() {
+        if (lyricsContainer.classList.contains('show')) {
+            lyricsContainer.classList.remove('show');
+            showLyricsBtn.textContent = 'Afficher les paroles';
+        } else {
+            lyricsContainer.classList.add('show');
+            showLyricsBtn.textContent = 'Masquer les paroles';
+        }
+    });
+});
+</script>
 </body>
 </html>
